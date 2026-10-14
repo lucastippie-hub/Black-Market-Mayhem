@@ -1,6 +1,7 @@
 -- Black Market Mayhem: dragon collecting prototype
 -- Paste this file into a Script under ServerScriptService.
 local Players = game:GetService("Players")
+local Lighting = game:GetService("Lighting")
 local rng = Random.new()
 local dragons = {}
 local definitions = {
@@ -32,14 +33,42 @@ local definitions = {
  {"Forbidden Root Dragon","Dark Web",2000000,40000,0.08}
 }
 local palette = {
- Street=Color3.fromRGB(160,165,170),
- Hidden=Color3.fromRGB(70,210,95),
- Deep=Color3.fromRGB(55,145,255),
- Shadow=Color3.fromRGB(175,75,255),
- Phantom=Color3.fromRGB(255,185,40),
- Mythic=Color3.fromRGB(255,55,135),
- ["Dark Web"]=Color3.fromRGB(15,245,225)
+ Street=Color3.fromRGB(80,85,95),
+ Hidden=Color3.fromRGB(24,110,80),
+ Deep=Color3.fromRGB(30,75,155),
+ Shadow=Color3.fromRGB(95,35,150),
+ Phantom=Color3.fromRGB(170,65,25),
+ Mythic=Color3.fromRGB(165,25,85),
+ ["Dark Web"]=Color3.fromRGB(10,190,165)
 }
+
+-- Deep midnight lighting; no external dark-web websites involved.
+Lighting.ClockTime=0.7
+Lighting.Brightness=1
+Lighting.Ambient=Color3.fromRGB(15,17,28)
+Lighting.OutdoorAmbient=Color3.fromRGB(10,12,21)
+Lighting.FogColor=Color3.fromRGB(12,14,25)
+Lighting.FogEnd=150
+local atmosphere=Lighting:FindFirstChildOfClass("Atmosphere") or Instance.new("Atmosphere")
+atmosphere.Density=0.48
+atmosphere.Color=Color3.fromRGB(36,41,59)
+atmosphere.Decay=Color3.fromRGB(12,14,24)
+atmosphere.Haze=2
+atmosphere.Parent=Lighting
+local grading=Lighting:FindFirstChild("UnderworldGrading") or Instance.new("ColorCorrectionEffect")
+grading.Name="UnderworldGrading"
+grading.TintColor=Color3.fromRGB(195,215,255)
+grading.Contrast=0.2
+grading.Saturation=-0.26
+grading.Brightness=-0.06
+grading.Parent=Lighting
+local bloom=Lighting:FindFirstChild("UnderworldBloom") or Instance.new("BloomEffect")
+bloom.Name="UnderworldBloom"
+bloom.Intensity=0.3
+bloom.Size=18
+bloom.Threshold=1.3
+bloom.Parent=Lighting
+
 local weightSum=0
 for _,d in ipairs(definitions) do
  dragons[d[1]]=d
@@ -77,6 +106,70 @@ local function use(part,action,fn)
  p.Parent=part
  p.Triggered:Connect(fn)
 end
+
+-- Each dragon is built from simple Roblox parts, so no external assets are required.
+-- The central sphere is the hitbox; wings, head, horns, eyes and tail are welded to it.
+local function createDragon(name,pos,tier)
+ local tint=palette[tier]
+ local root=block(name,pos,Vector3.new(3,2.5,4),Color3.fromRGB(23,24,32),Enum.PartType.Ball)
+ root.Material=Enum.Material.Slate
+ root.CanCollide=false
+ local function limb(className,label,offset,size,color,material,shape,rotation)
+  local p=Instance.new(className)
+  p.Name=label
+  p.Size=size
+  p.Color=color
+  p.Material=material or Enum.Material.SmoothPlastic
+  if className=="Part" then p.Shape=shape or Enum.PartType.Block end
+  p.CanCollide=false
+  p.Massless=true
+  p.CFrame=root.CFrame * CFrame.new(offset) * (rotation or CFrame.new())
+  p.Parent=root
+  local weld=Instance.new("WeldConstraint")
+  weld.Part0=root
+  weld.Part1=p
+  weld.Parent=p
+  return p
+ end
+ limb("Part","Dragon Head",Vector3.new(0,1,-2.1),Vector3.new(2,1.65,2),Color3.fromRGB(19,20,28),Enum.Material.Slate,Enum.PartType.Ball)
+ limb("Part","Snout",Vector3.new(0,0.8,-3),Vector3.new(1.3,0.75,1.5),Color3.fromRGB(27,28,37),Enum.Material.Slate,Enum.PartType.Ball)
+ for _,side in ipairs({-1,1}) do
+  limb("WedgePart","Ragged Wing",Vector3.new(side*2.5,0.65,0.4),Vector3.new(3.8,0.35,4.6),tint,Enum.Material.SmoothPlastic,nil,CFrame.Angles(0,side*0.25,side*0.28))
+  limb("WedgePart","Horn",Vector3.new(side*0.65,2,-2.1),Vector3.new(0.5,1.2,0.75),Color3.fromRGB(8,8,13),Enum.Material.Slate,nil,CFrame.Angles(-0.25,0,0))
+  limb("Part","Glowing Eye",Vector3.new(side*0.75,1.35,-2.92),Vector3.new(0.22,0.26,0.23),tint,Enum.Material.Neon,Enum.PartType.Ball)
+  limb("Part","Claw",Vector3.new(side*1.05,-0.9,-1.05),Vector3.new(0.55,1.1,0.65),Color3.fromRGB(11,11,16),Enum.Material.Slate)
+ end
+ limb("WedgePart","Spiked Tail",Vector3.new(0,0.1,3.3),Vector3.new(1.15,1.1,3.4),Color3.fromRGB(16,16,24),Enum.Material.Slate,nil,CFrame.Angles(-0.15,math.pi,0))
+ limb("WedgePart","Back Spike",Vector3.new(0,1.45,0.6),Vector3.new(0.8,1.4,1.1),tint,Enum.Material.SmoothPlastic)
+ local glow=Instance.new("PointLight")
+ glow.Color=tint
+ glow.Brightness=1.1
+ glow.Range=12
+ glow.Parent=root
+ local smoke=Instance.new("Smoke")
+ smoke.Color=Color3.fromRGB(6,7,12)
+ smoke.Opacity=0.38
+ smoke.RiseVelocity=0.5
+ smoke.Size=2
+ smoke.Parent=root
+ local title=Instance.new("BillboardGui")
+ title.Size=UDim2.fromOffset(220,48)
+ title.StudsOffset=Vector3.new(0,4.3,0)
+ title.AlwaysOnTop=true
+ title.MaxDistance=65
+ title.Parent=root
+ local text=Instance.new("TextLabel")
+ text.Size=UDim2.fromScale(1,1)
+ text.BackgroundTransparency=1
+ text.Text=name.."\\n["..tier.."]"
+ text.TextColor3=tint
+ text.TextStrokeTransparency=0
+ text.TextScaled=true
+ text.Font=Enum.Font.GothamBold
+ text.Parent=title
+ return root
+end
+
 local bases={}
 local assigned={}
 local function carried(plr)
@@ -95,8 +188,7 @@ local function drawBase(base)
  end
 end
 local function store(base,d)
- local orb=block(d[1],base.pos+Vector3.new(0,3,0),Vector3.new(3,3,3),palette[d[2]],Enum.PartType.Ball)
- orb.Material=Enum.Material.Neon
+ local orb=createDragon(d[1],base.pos+Vector3.new(0,3,0),d[2])
  local entry={part=orb,dragon=d}
  table.insert(base.items,entry)
  drawBase(base)
@@ -110,15 +202,42 @@ local function store(base,d)
   drawBase(base)
  end)
 end
-block("Asphalt",Vector3.new(0,-1,0),Vector3.new(220,2,220),Color3.fromRGB(38,40,50))
+block("Asphalt",Vector3.new(0,-1,0),Vector3.new(220,2,220),Color3.fromRGB(13,15,22))
+
+-- Neon downtown silhouettes, lamps, roads and a central underground yard.
+for i=1,20 do
+ local angle=i*math.pi/10
+ local radius=96
+ local x=math.cos(angle)*radius
+ local z=math.sin(angle)*radius
+ local height=rng:NextInteger(16,38)
+ block("Abandoned Tower "..i,Vector3.new(x,height/2,z),Vector3.new(13,height,13),Color3.fromRGB(14,17,25))
+ local beacon=block("Rooftop Neon "..i,Vector3.new(x,height+1,z),Vector3.new(9,0.5,9),i%2==0 and Color3.fromRGB(90,20,125) or Color3.fromRGB(12,100,110))
+ beacon.Material=Enum.Material.Neon
+end
+for i=1,12 do
+ local theta=i*math.pi/6
+ local x=math.cos(theta)*42
+ local z=math.sin(theta)*42
+ block("Lamp Post "..i,Vector3.new(x,4,z),Vector3.new(0.7,8,0.7),Color3.fromRGB(28,30,37))
+ local bulb=block("Neon Lantern "..i,Vector3.new(x,8.3,z),Vector3.new(2,0.7,2),Color3.fromRGB(22,160,165))
+ bulb.Material=Enum.Material.Neon
+ local light=Instance.new("PointLight")
+ light.Color=bulb.Color
+ light.Range=24
+ light.Brightness=1.4
+ light.Parent=bulb
+end
+
 local spawn=Instance.new("SpawnLocation")
 spawn.Name="Market Spawn"
 spawn.Position=Vector3.new(0,0.5,0)
 spawn.Size=Vector3.new(12,1,12)
 spawn.Anchored=true
 spawn.Neutral=true
+spawn.Color=Color3.fromRGB(28,30,38)
 spawn.Parent=world
-local dealer=block("Dark Web Broker",Vector3.new(0,3,-23),Vector3.new(9,6,5),Color3.fromRGB(50,190,105))
+local dealer=block("Dark Web Broker",Vector3.new(0,3,-23),Vector3.new(9,6,5),Color3.fromRGB(17,78,67))
 use(dealer,"Sell held dragon",function(plr)
  local d=dragons[carried(plr)]
  local c=wallet(plr)
@@ -134,8 +253,21 @@ local eggs = {
  {"Shadow Egg",20000,3,5,Vector3.new(0,3,23)},
  {"Forbidden Egg",150000,5,7,Vector3.new(18,3,23)}
 }
+
+-- Hatching reveal: local visual on the terminal, no paid randomness.
+local function hatchFlash(station,tier)
+ local fx=Instance.new("PointLight")
+ fx.Color=palette[tier]
+ fx.Brightness=7
+ fx.Range=24
+ fx.Parent=station
+ task.delay(0.8,function()
+  if fx.Parent then fx:Destroy() end
+ end)
+end
+
 for _,egg in ipairs(eggs) do
- local station=block("Underground Terminal - "..egg[1],egg[5],Vector3.new(10,6,5),Color3.fromRGB(28,65,85))
+ local station=block("Underground Terminal - "..egg[1],egg[5],Vector3.new(10,6,5),Color3.fromRGB(17,30,49))
  use(station,"Hatch $"..egg[2],function(plr)
   local c=wallet(plr)
   if not c or c.Value<egg[2] or carried(plr)~="" then return end
@@ -157,6 +289,7 @@ for _,egg in ipairs(eggs) do
     setCarried(plr,dragon[1])
     plr:SetAttribute("LatestHatch",dragon[1])
     plr:SetAttribute("LatestTier",dragon[2])
+    hatchFlash(station,dragon[2])
     break
    end
   end
@@ -167,8 +300,8 @@ for i=1,8 do
  local a=(i-1)*math.pi/4
  local pos=Vector3.new(math.cos(a)*73,0,math.sin(a)*73)
  local base={owner=nil,pos=pos,items={}}
- block("Warehouse "..i,pos,Vector3.new(31,1,25),Color3.fromRGB(70,75,90))
- local deposit=block("Deposit "..i,pos+Vector3.new(0,2,-9),Vector3.new(7,3,3),Color3.fromRGB(50,110,255))
+ block("Warehouse "..i,pos,Vector3.new(31,1,25),Color3.fromRGB(24,26,37))
+ local deposit=block("Deposit "..i,pos+Vector3.new(0,2,-9),Vector3.new(7,3,3),Color3.fromRGB(26,48,90))
  use(deposit,"Store held dragon",function(plr)
   if plr~=base.owner or #base.items>=10 then return end
   local d=dragons[carried(plr)]
@@ -221,8 +354,7 @@ task.spawn(function()
  while true do
   if active<16 then
    local d=roll()
-   local orb=block(d[1],Vector3.new(rng:NextInteger(-25,25),2,rng:NextInteger(-12,12)),Vector3.new(3,3,3),palette[d[2]],Enum.PartType.Ball)
-   orb.Material=Enum.Material.Neon
+   local orb=createDragon(d[1],Vector3.new(rng:NextInteger(-25,25),2,rng:NextInteger(-12,12)),d[2])
    active+=1
    local gone=false
    local function remove()
