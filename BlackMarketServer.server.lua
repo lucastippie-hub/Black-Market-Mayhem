@@ -42,25 +42,27 @@ local palette = {
  ["Dark Web"]=Color3.fromRGB(10,190,165)
 }
 
--- Deep midnight lighting; no external dark-web websites involved.
-Lighting.ClockTime=19.5
-Lighting.Brightness=2.5
-Lighting.Ambient=Color3.fromRGB(65,70,92)
-Lighting.OutdoorAmbient=Color3.fromRGB(55,62,85)
+-- Readable dusk lighting: mysterious color palette without obscuring gameplay.
+Lighting.ClockTime=16.7
+Lighting.Brightness=3.5
+Lighting.ExposureCompensation=0.45
+Lighting.EnvironmentDiffuseScale=0.7
+Lighting.Ambient=Color3.fromRGB(115,120,145)
+Lighting.OutdoorAmbient=Color3.fromRGB(110,118,145)
 Lighting.FogColor=Color3.fromRGB(12,14,25)
-Lighting.FogEnd=310
+Lighting.FogEnd=500
 local atmosphere=Lighting:FindFirstChildOfClass("Atmosphere") or Instance.new("Atmosphere")
-atmosphere.Density=0.24
-atmosphere.Color=Color3.fromRGB(36,41,59)
-atmosphere.Decay=Color3.fromRGB(12,14,24)
-atmosphere.Haze=0.8
+atmosphere.Density=0.12
+atmosphere.Color=Color3.fromRGB(130,145,175)
+atmosphere.Decay=Color3.fromRGB(70,85,120)
+atmosphere.Haze=0.35
 atmosphere.Parent=Lighting
 local grading=Lighting:FindFirstChild("UnderworldGrading") or Instance.new("ColorCorrectionEffect")
 grading.Name="UnderworldGrading"
-grading.TintColor=Color3.fromRGB(195,215,255)
-grading.Contrast=0.1
-grading.Saturation=-0.12
-grading.Brightness=0.06
+grading.TintColor=Color3.fromRGB(235,240,255)
+grading.Contrast=0.07
+grading.Saturation=-0.05
+grading.Brightness=0.08
 grading.Parent=Lighting
 local bloom=Lighting:FindFirstChild("UnderworldBloom") or Instance.new("BloomEffect")
 bloom.Name="UnderworldBloom"
@@ -111,7 +113,7 @@ end
 -- The central sphere is the hitbox; wings, head, horns, eyes and tail are welded to it.
 local function createDragon(name,pos,tier)
  local tint=palette[tier]
- local root=block(name,pos,Vector3.new(3,2.5,4),Color3.fromRGB(23,24,32),Enum.PartType.Ball)
+ local root=block(name,pos,Vector3.new(3,2.5,4),Color3.fromRGB(70,74,93),Enum.PartType.Ball)
  root.Material=Enum.Material.Slate
  root.CanCollide=false
  local function limb(className,label,offset,size,color,material,shape,rotation)
@@ -131,15 +133,15 @@ local function createDragon(name,pos,tier)
   weld.Parent=p
   return p
  end
- limb("Part","Dragon Head",Vector3.new(0,1,-2.1),Vector3.new(2,1.65,2),Color3.fromRGB(19,20,28),Enum.Material.Slate,Enum.PartType.Ball)
- limb("Part","Snout",Vector3.new(0,0.8,-3),Vector3.new(1.3,0.75,1.5),Color3.fromRGB(27,28,37),Enum.Material.Slate,Enum.PartType.Ball)
+ limb("Part","Dragon Head",Vector3.new(0,1,-2.1),Vector3.new(2,1.65,2),Color3.fromRGB(62,67,87),Enum.Material.Slate,Enum.PartType.Ball)
+ limb("Part","Snout",Vector3.new(0,0.8,-3),Vector3.new(1.3,0.75,1.5),Color3.fromRGB(56,62,82),Enum.Material.Slate,Enum.PartType.Ball)
  for _,side in ipairs({-1,1}) do
-  limb("WedgePart","Ragged Wing",Vector3.new(side*2.5,0.65,0.4),Vector3.new(3.8,0.35,4.6),tint,Enum.Material.SmoothPlastic,nil,CFrame.Angles(0,side*0.25,side*0.28))
-  limb("WedgePart","Horn",Vector3.new(side*0.65,2,-2.1),Vector3.new(0.5,1.2,0.75),Color3.fromRGB(8,8,13),Enum.Material.Slate,nil,CFrame.Angles(-0.25,0,0))
-  limb("Part","Glowing Eye",Vector3.new(side*0.75,1.35,-2.92),Vector3.new(0.22,0.26,0.23),tint,Enum.Material.Neon,Enum.PartType.Ball)
-  limb("Part","Claw",Vector3.new(side*1.05,-0.9,-1.05),Vector3.new(0.55,1.1,0.65),Color3.fromRGB(11,11,16),Enum.Material.Slate)
+  limb("WedgePart","Ragged Wing",Vector3.new(side*2.25,0.65,0.4),Vector3.new(2.8,0.35,3.4),tint,Enum.Material.Neon,nil,CFrame.Angles(0,side*0.25,side*0.28))
+  limb("WedgePart","Horn",Vector3.new(side*0.65,2,-2.1),Vector3.new(0.5,1.2,0.75),Color3.fromRGB(42,45,62),Enum.Material.Slate,nil,CFrame.Angles(-0.25,0,0))
+  limb("Part","Glowing Eye",Vector3.new(side*0.75,1.35,-2.92),Vector3.new(0.34,0.34,0.29),tint,Enum.Material.Neon,Enum.PartType.Ball)
+  limb("Part","Claw",Vector3.new(side*1.05,-0.9,-1.05),Vector3.new(0.55,1.1,0.65),Color3.fromRGB(46,51,66),Enum.Material.Slate)
  end
- limb("WedgePart","Spiked Tail",Vector3.new(0,0.1,3.3),Vector3.new(1.15,1.1,3.4),Color3.fromRGB(16,16,24),Enum.Material.Slate,nil,CFrame.Angles(-0.15,math.pi,0))
+ limb("WedgePart","Spiked Tail",Vector3.new(0,0.1,3.3),Vector3.new(1.15,1.1,3.4),Color3.fromRGB(53,58,74),Enum.Material.Slate,nil,CFrame.Angles(-0.15,math.pi,0))
  limb("WedgePart","Back Spike",Vector3.new(0,1.45,0.6),Vector3.new(0.8,1.4,1.1),tint,Enum.Material.SmoothPlastic)
  local glow=Instance.new("PointLight")
  glow.Color=tint
@@ -148,7 +150,7 @@ local function createDragon(name,pos,tier)
  glow.Parent=root
  local smoke=Instance.new("Smoke")
  smoke.Color=Color3.fromRGB(6,7,12)
- smoke.Opacity=0.38
+ smoke.Opacity=0.18
  smoke.RiseVelocity=0.5
  smoke.Size=2
  smoke.Parent=root
@@ -161,7 +163,7 @@ local function createDragon(name,pos,tier)
  local text=Instance.new("TextLabel")
  text.Size=UDim2.fromScale(1,1)
  text.BackgroundTransparency=1
- text.Text=name.."\\n["..tier.."]"
+ text.Text = name .. "\n[" .. tier .. "]"
  text.TextColor3=tint
  text.TextStrokeTransparency=0
  text.TextScaled=true
@@ -202,7 +204,7 @@ local function store(base,d)
   drawBase(base)
  end)
 end
-block("Asphalt",Vector3.new(0,-1,0),Vector3.new(220,2,220),Color3.fromRGB(40,44,57))
+block("Asphalt",Vector3.new(0,-1,0),Vector3.new(220,2,220),Color3.fromRGB(80,85,104))
 
 -- Neon downtown silhouettes, lamps, roads and a central underground yard.
 for i=1,20 do
@@ -211,7 +213,7 @@ for i=1,20 do
  local x=math.cos(angle)*radius
  local z=math.sin(angle)*radius
  local height=rng:NextInteger(16,38)
- block("Abandoned Tower "..i,Vector3.new(x,height/2,z),Vector3.new(13,height,13),Color3.fromRGB(14,17,25))
+ block("Abandoned Tower "..i,Vector3.new(x,height/2,z),Vector3.new(13,height,13),Color3.fromRGB(57,60,78))
  local beacon=block("Rooftop Neon "..i,Vector3.new(x,height+1,z),Vector3.new(9,0.5,9),i%2==0 and Color3.fromRGB(90,20,125) or Color3.fromRGB(12,100,110))
  beacon.Material=Enum.Material.Neon
 end
@@ -224,8 +226,8 @@ for i=1,12 do
  bulb.Material=Enum.Material.Neon
  local light=Instance.new("PointLight")
  light.Color=bulb.Color
- light.Range=34
- light.Brightness=2.2
+ light.Range=46
+ light.Brightness=3.2
  light.Parent=bulb
 end
 
@@ -237,7 +239,7 @@ spawn.Anchored=true
 spawn.Neutral=true
 spawn.Color=Color3.fromRGB(28,30,38)
 spawn.Parent=world
-local dealer=block("Dark Web Broker",Vector3.new(0,3,-23),Vector3.new(9,6,5),Color3.fromRGB(17,78,67))
+local dealer=block("Dark Web Broker",Vector3.new(0,3,-23),Vector3.new(9,6,5),Color3.fromRGB(42,105,91))
 use(dealer,"Sell held dragon",function(plr)
  local d=dragons[carried(plr)]
  local c=wallet(plr)
@@ -267,7 +269,7 @@ local function hatchFlash(station,tier)
 end
 
 for _,egg in ipairs(eggs) do
- local station=block("Underground Terminal - "..egg[1],egg[5],Vector3.new(10,6,5),Color3.fromRGB(17,30,49))
+ local station=block("Underground Terminal - "..egg[1],egg[5],Vector3.new(10,6,5),Color3.fromRGB(49,63,88))
  use(station,"Hatch $"..egg[2],function(plr)
   local c=wallet(plr)
   if not c or c.Value<egg[2] or carried(plr)~="" then return end
@@ -300,8 +302,8 @@ for i=1,8 do
  local a=(i-1)*math.pi/4
  local pos=Vector3.new(math.cos(a)*73,0,math.sin(a)*73)
  local base={owner=nil,pos=pos,items={}}
- block("Warehouse "..i,pos,Vector3.new(31,1,25),Color3.fromRGB(49,54,70))
- local deposit=block("Deposit "..i,pos+Vector3.new(0,2,-9),Vector3.new(7,3,3),Color3.fromRGB(26,48,90))
+ block("Warehouse "..i,pos,Vector3.new(31,1,25),Color3.fromRGB(84,88,108))
+ local deposit=block("Deposit "..i,pos+Vector3.new(0,2,-9),Vector3.new(7,3,3),Color3.fromRGB(52,83,135))
  use(deposit,"Store held dragon",function(plr)
   if plr~=base.owner or #base.items>=10 then return end
   local d=dragons[carried(plr)]
