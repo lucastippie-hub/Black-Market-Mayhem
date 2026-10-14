@@ -1,14 +1,28 @@
-# Black Market Mayhem
-A Roblox collecting, selling, stealing, and passive-income prototype with **26 original pets** across seven rarities.
+# Black Market Mayhem — Dark Web Dragons
 
-## How to install in Roblox Studio
-1. Create or open a Roblox Baseplate.
-2. Open Explorer, right-click **ServerScriptService**, and insert a **Script**.
-3. Rename it `BlackMarketServer` and paste the contents of [BlackMarketServer.server.lua](BlackMarketServer.server.lua).
-4. Press **Play**. A temporary map will appear automatically.
-5. Hold **E** on glowing pet spheres to pick them up; sell them at the green dealer or store them at the blue station in your assigned warehouse. Stored pets earn cash every second and other players can steal them.
+A Roblox prototype with **26 original collectible dragons** and seven tiers: Street, Hidden, Deep, Shadow, Phantom, Mythic, and Dark Web.
 
-## Current limits
-This is a first prototype. Pets are colored placeholder spheres, not finished models. Money and pets are **not saved** between sessions. The interface, better warehouse signs, security, paid upgrades, and balancing are still to come. Test with multiple Studio players to check stealing.
+## Install in Roblox Studio
+1. Open the place in Roblox Studio.
+2. Open **Explorer → ServerScriptService**.
+3. Insert a regular **Script** called `BlackMarketServer`.
+4. Copy and paste all the code from [BlackMarketServer.server.lua](BlackMarketServer.server.lua) into that Script. **Replace the old script; don't keep both.**
+5. Press **Play**.
 
-Pet names, rarities, sale prices, passive-income values, and spawn weights are editable in the `definitions` table. This code runs on the server.
+## How to play
+- Hold **E** near a glowing dragon to capture it (only one carried at a time).
+- Sell it at the **Dark Web Broker** for instant cash.
+- Store it at the blue **Deposit** station at your assigned warehouse for passive income each second.
+- In multiplayer, steal dragons from someone else's warehouse and bring them home.
+- Hatch new dragons at three underground egg terminals. Hatching uses *in-game Cash*, not Robux:
+  - **Street Egg:** $500 (Street–Deep tiers)
+  - **Shadow Egg:** $20,000 (Deep–Phantom tiers)
+  - **Forbidden Egg:** $150,000 (Phantom–Dark Web tiers)
+- A successful hatch sets your `CarriedDragon`, `LatestHatch`, and `LatestTier` player attributes.
+
+## Prototype caveats
+- Dragons are **placeholder neon spheres**, not finished 3D dragon models.
+- The egg terminals are simple proximity prompts, not a complete website-style interface.
+- Cash and dragons are **not saved** between sessions.
+- No inventory UI, gamepass shop, raid protection, or polished city yet.
+- Test in Roblox Studio with two players before publishing.
