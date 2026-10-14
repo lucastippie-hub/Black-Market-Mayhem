@@ -43,30 +43,30 @@ local palette = {
 }
 
 -- Readable dusk lighting: mysterious color palette without obscuring gameplay.
-Lighting.ClockTime=16.7
-Lighting.Brightness=3.5
-Lighting.ExposureCompensation=0.45
-Lighting.EnvironmentDiffuseScale=0.7
-Lighting.Ambient=Color3.fromRGB(115,120,145)
-Lighting.OutdoorAmbient=Color3.fromRGB(110,118,145)
+Lighting.ClockTime=18.2
+Lighting.Brightness=2.6
+Lighting.ExposureCompensation=0.18
+Lighting.EnvironmentDiffuseScale=0.65
+Lighting.Ambient=Color3.fromRGB(110,110,135)
+Lighting.OutdoorAmbient=Color3.fromRGB(105,110,135)
 Lighting.FogColor=Color3.fromRGB(12,14,25)
-Lighting.FogEnd=500
+Lighting.FogEnd=420
 local atmosphere=Lighting:FindFirstChildOfClass("Atmosphere") or Instance.new("Atmosphere")
-atmosphere.Density=0.12
-atmosphere.Color=Color3.fromRGB(130,145,175)
-atmosphere.Decay=Color3.fromRGB(70,85,120)
-atmosphere.Haze=0.35
+atmosphere.Density=0.18
+atmosphere.Color=Color3.fromRGB(95,105,148)
+atmosphere.Decay=Color3.fromRGB(55,60,100)
+atmosphere.Haze=0.55
 atmosphere.Parent=Lighting
 local grading=Lighting:FindFirstChild("UnderworldGrading") or Instance.new("ColorCorrectionEffect")
 grading.Name="UnderworldGrading"
-grading.TintColor=Color3.fromRGB(235,240,255)
-grading.Contrast=0.07
-grading.Saturation=-0.05
-grading.Brightness=0.08
+grading.TintColor=Color3.fromRGB(205,207,245)
+grading.Contrast=0.09
+grading.Saturation=-0.12
+grading.Brightness=0.025
 grading.Parent=Lighting
 local bloom=Lighting:FindFirstChild("UnderworldBloom") or Instance.new("BloomEffect")
 bloom.Name="UnderworldBloom"
-bloom.Intensity=0.3
+bloom.Intensity=0.14
 bloom.Size=18
 bloom.Threshold=1.3
 bloom.Parent=Lighting
@@ -95,6 +95,8 @@ local function block(name,pos,size,color,shape)
  p.Color=color
  p.Anchored=true
  p.Shape=shape or Enum.PartType.Block
+ p.TopSurface=Enum.SurfaceType.Smooth
+ p.BottomSurface=Enum.SurfaceType.Smooth
  p.Parent=world
  return p
 end
@@ -204,7 +206,8 @@ local function store(base,d)
   drawBase(base)
  end)
 end
-block("Asphalt",Vector3.new(0,-1,0),Vector3.new(220,2,220),Color3.fromRGB(80,85,104))
+local asphalt=block("Asphalt",Vector3.new(0,-0.72,0),Vector3.new(220,2,220),Color3.fromRGB(58,62,75))
+asphalt.Material=Enum.Material.Asphalt
 
 -- Neon downtown silhouettes, lamps, roads and a central underground yard.
 for i=1,20 do
@@ -213,7 +216,17 @@ for i=1,20 do
  local x=math.cos(angle)*radius
  local z=math.sin(angle)*radius
  local height=rng:NextInteger(16,38)
- block("Abandoned Tower "..i,Vector3.new(x,height/2,z),Vector3.new(13,height,13),Color3.fromRGB(57,60,78))
+
+ local tower=block("Abandoned Tower "..i,Vector3.new(x,height/2,z),Vector3.new(13,height,13),Color3.fromRGB(48,51,67))
+ tower.Material=Enum.Material.Concrete
+ local towardsCenter=Vector3.new(-math.cos(angle),0,-math.sin(angle))
+ for floorNumber=1,math.floor((height-4)/6) do
+  local windowPos=Vector3.new(x,floorNumber*6,z)+towardsCenter*7
+  local pane=block("Dim Window "..i.."_"..floorNumber,windowPos,Vector3.new(7,2.6,0.25),Color3.fromRGB(48,105,126))
+  pane.CFrame=CFrame.lookAt(windowPos,windowPos+towardsCenter)
+  pane.Material=Enum.Material.Neon
+  pane.Transparency=0.3
+ end
  local beacon=block("Rooftop Neon "..i,Vector3.new(x,height+1,z),Vector3.new(9,0.5,9),i%2==0 and Color3.fromRGB(90,20,125) or Color3.fromRGB(12,100,110))
  beacon.Material=Enum.Material.Neon
 end
@@ -222,12 +235,12 @@ for i=1,12 do
  local x=math.cos(theta)*42
  local z=math.sin(theta)*42
  block("Lamp Post "..i,Vector3.new(x,4,z),Vector3.new(0.7,8,0.7),Color3.fromRGB(28,30,37))
- local bulb=block("Neon Lantern "..i,Vector3.new(x,8.3,z),Vector3.new(2,0.7,2),Color3.fromRGB(22,160,165))
+ local bulb=block("Neon Lantern "..i,Vector3.new(x,8.3,z),Vector3.new(2,0.7,2),Color3.fromRGB(28,120,139))
  bulb.Material=Enum.Material.Neon
  local light=Instance.new("PointLight")
  light.Color=bulb.Color
- light.Range=46
- light.Brightness=3.2
+ light.Range=30
+ light.Brightness=1.65
  light.Parent=bulb
 end
 
@@ -302,7 +315,7 @@ for i=1,8 do
  local a=(i-1)*math.pi/4
  local pos=Vector3.new(math.cos(a)*73,0,math.sin(a)*73)
  local base={owner=nil,pos=pos,items={}}
- block("Warehouse "..i,pos,Vector3.new(31,1,25),Color3.fromRGB(84,88,108))
+ block("Warehouse "..i,pos,Vector3.new(31,1,25),Color3.fromRGB(64,68,86))
  local deposit=block("Deposit "..i,pos+Vector3.new(0,2,-9),Vector3.new(7,3,3),Color3.fromRGB(52,83,135))
  use(deposit,"Store held dragon",function(plr)
   if plr~=base.owner or #base.items>=10 then return end
