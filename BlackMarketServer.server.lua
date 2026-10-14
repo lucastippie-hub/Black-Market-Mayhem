@@ -118,7 +118,7 @@ spawn.Size=Vector3.new(12,1,12)
 spawn.Anchored=true
 spawn.Neutral=true
 spawn.Parent=world
-local dealer=block("Black Market Dealer",Vector3.new(0,3,-23),Vector3.new(9,6,5),Color3.fromRGB(50,190,105))
+local dealer=block("Dark Web Broker",Vector3.new(0,3,-23),Vector3.new(9,6,5),Color3.fromRGB(50,190,105))
 use(dealer,"Sell held dragon",function(plr)
  local d=dragons[carried(plr)]
  local c=wallet(plr)
@@ -126,6 +126,43 @@ use(dealer,"Sell held dragon",function(plr)
  c.Value+=d[3]
  setCarried(plr,nil)
 end)
+
+-- Fictional underground egg terminals; purchased with earned game cash.
+local eggTiers = {Street=1,Hidden=2,Deep=3,Shadow=4,Phantom=5,Mythic=6,["Dark Web"]=7}
+local eggs = {
+ {"Street Egg",500,1,3,Vector3.new(-18,3,23)},
+ {"Shadow Egg",20000,3,5,Vector3.new(0,3,23)},
+ {"Forbidden Egg",150000,5,7,Vector3.new(18,3,23)}
+}
+for _,egg in ipairs(eggs) do
+ local station=block("Underground Terminal - "..egg[1],egg[5],Vector3.new(10,6,5),Color3.fromRGB(28,65,85))
+ use(station,"Hatch $"..egg[2],function(plr)
+  local c=wallet(plr)
+  if not c or c.Value<egg[2] or carried(plr)~="" then return end
+  local candidates={}
+  local total=0
+  for _,dragon in ipairs(definitions) do
+   local tier=eggTiers[dragon[2]]
+   if tier>=egg[3] and tier<=egg[4] then
+    table.insert(candidates,dragon)
+    total+=dragon[5]
+   end
+  end
+  if total<=0 then return end
+  c.Value-=egg[2]
+  local roll=rng:NextNumber(0,total)
+  for _,dragon in ipairs(candidates) do
+   roll-=dragon[5]
+   if roll<=0 then
+    setCarried(plr,dragon[1])
+    plr:SetAttribute("LatestHatch",dragon[1])
+    plr:SetAttribute("LatestTier",dragon[2])
+    break
+   end
+  end
+ end)
+end
+
 for i=1,8 do
  local a=(i-1)*math.pi/4
  local pos=Vector3.new(math.cos(a)*73,0,math.sin(a)*73)
