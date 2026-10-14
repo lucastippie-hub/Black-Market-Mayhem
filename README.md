@@ -1,28 +1,30 @@
 # Black Market Mayhem — Dark Web Dragons
 
-A Roblox prototype with **26 original collectible dragons** and seven tiers: Street, Hidden, Deep, Shadow, Phantom, Mythic, and Dark Web.
+A dark-themed Roblox prototype with **26 original dragons** across seven tiers: Street, Hidden, Deep, Shadow, Phantom, Mythic, and Dark Web.
 
-## Install in Roblox Studio
-1. Open the place in Roblox Studio.
-2. Open **Explorer → ServerScriptService**.
-3. Insert a regular **Script** called `BlackMarketServer`.
-4. Copy and paste all the code from [BlackMarketServer.server.lua](BlackMarketServer.server.lua) into that Script. **Replace the old script; don't keep both.**
-5. Press **Play**.
+## New visual features
+- Midnight fog, desaturated lighting, abandoned buildings, neon rooftops, and teal streetlamps.
+- Procedural dragon figures assembled from Roblox parts: dark bodies, wings, horns, eyes, claws, and spiked tails.
+- Tier-colored glowing eyes, smoky aura, and overhead name labels.
+- Egg hatch flashes on the terminals.
+- No external models or websites needed.
 
-## How to play
-- Hold **E** near a glowing dragon to capture it (only one carried at a time).
-- Sell it at the **Dark Web Broker** for instant cash.
-- Store it at the blue **Deposit** station at your assigned warehouse for passive income each second.
-- In multiplayer, steal dragons from someone else's warehouse and bring them home.
-- Hatch new dragons at three underground egg terminals. Hatching uses *in-game Cash*, not Robux:
-  - **Street Egg:** $500 (Street–Deep tiers)
-  - **Shadow Egg:** $20,000 (Deep–Phantom tiers)
-  - **Forbidden Egg:** $150,000 (Phantom–Dark Web tiers)
-- A successful hatch sets your `CarriedDragon`, `LatestHatch`, and `LatestTier` player attributes.
+## How to test in Roblox Studio
+1. Open your Roblox place.
+2. In Explorer, go to **ServerScriptService** and insert a regular **Script** named `BlackMarketServer`.
+3. Copy the complete code from [BlackMarketServer.server.lua](BlackMarketServer.server.lua) and paste it into that Script. If you already had the older version, **replace it** rather than adding a second script.
+4. Press **Play**. The map is generated when the server runs.
+5. Hold **E** at a dragon to carry it; hold **E** at the **Dark Web Broker** to sell it, or at your blue warehouse deposit station to store it for passive income.
+6. Test multiplayer with two Studio players to steal dragons from another vault.
 
-## Prototype caveats
-- Dragons are **placeholder neon spheres**, not finished 3D dragon models.
-- The egg terminals are simple proximity prompts, not a complete website-style interface.
-- Cash and dragons are **not saved** between sessions.
-- No inventory UI, gamepass shop, raid protection, or polished city yet.
-- Test in Roblox Studio with two players before publishing.
+## Egg prices (in-game Cash only)
+- Street Egg: $500, Street through Deep
+- Shadow Egg: $20,000, Deep through Phantom
+- Forbidden Egg: $150,000, Phantom through Dark Web
+
+## Known prototype limitations
+- Dragon models are low-poly parts, not detailed animated meshes.
+- Hatching effect is a light flash, not yet a full cinematic.
+- No DataStore saves, gamepasses, inventory UI, vault locks, or release balancing yet.
+- Scripts committed to GitHub **do not automatically sync** with Roblox Studio.
+- Prototype code has not been play-tested in a live Roblox Studio session.
