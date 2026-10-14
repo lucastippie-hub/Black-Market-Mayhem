@@ -1,48 +1,48 @@
--- Black Market Mayhem: starter pet gameplay
+-- Black Market Mayhem: dragon collecting prototype
 -- Paste this file into a Script under ServerScriptService.
 local Players = game:GetService("Players")
 local rng = Random.new()
-local pets = {}
+local dragons = {}
 local definitions = {
- {"Dumpster Goblin","Common",100,2,100},
- {"Tax Rat","Common",150,3,100},
- {"Suspicious Pigeon","Common",200,4,100},
- {"Parking Lot Frog","Common",250,5,100},
- {"Bootleg Bunny","Common",300,6,100},
- {"Microwave Hamster","Uncommon",500,10,50},
- {"Waffle Weasel","Uncommon",650,13,50},
- {"Moped Mole","Uncommon",800,16,50},
- {"Soda Slug","Uncommon",950,19,50},
- {"Neon Possum","Uncommon",1100,22,50},
- {"Cursed Duck","Rare",2500,50,22},
- {"Laser Llama","Rare",3200,64,22},
- {"Disco Raccoon","Rare",4000,80,22},
- {"WiFi Wizard Cat","Rare",5500,110,22},
- {"Golden Roach","Rare",7000,140,22},
- {"Glitch Gecko","Epic",12000,240,9},
- {"Plasma Pug","Epic",16000,320,9},
- {"CEO Capybara","Epic",21000,420,9},
- {"Hologram Hyena","Epic",28000,560,9},
- {"Nuclear Nugget","Legendary",50000,1000,3},
- {"Diamond Dumpster Dragon","Legendary",80000,1600,3},
- {"Void Vulture","Legendary",125000,2500,3},
- {"The Forbidden Ferret","Mythic",250000,5000,1},
- {"Galaxy Goose","Mythic",400000,8000,1},
- {"404 Entity","Secret",1000000,20000,0.15},
- {"The Unlicensed Sun","Secret",2000000,40000,0.08}
+ {"Street Scales Wyrm","Street",100,2,100},
+ {"Alley Byte Drake","Street",150,3,100},
+ {"Smuggler Drake","Street",200,4,100},
+ {"Backdoor Basilisk","Street",250,5,100},
+ {"Dumpster Flame Dragon","Street",300,6,100},
+ {"Proxy Fang Dragon","Hidden",500,10,50},
+ {"Cipher Claw Drake","Hidden",650,13,50},
+ {"Firewall Dragon","Hidden",800,16,50},
+ {"Packet Prowler","Hidden",950,19,50},
+ {"Ghost Cache Dragon","Hidden",1100,22,50},
+ {"Deep Vault Dragon","Deep",2500,50,22},
+ {"Onion Wing Serpent","Deep",3200,64,22},
+ {"Hex Market Hydra","Deep",4000,80,22},
+ {"Torrent Talon Drake","Deep",5500,110,22},
+ {"Black Ice Dragon","Deep",7000,140,22},
+ {"Zero-Day Wyvern","Shadow",12000,240,9},
+ {"Night Protocol Dragon","Shadow",16000,320,9},
+ {"Phantom Listing Dragon","Shadow",21000,420,9},
+ {"Neon Hydra","Shadow",28000,560,9},
+ {"Ransomfire Dragon","Phantom",50000,1000,3},
+ {"Diamond Vault Dragon","Phantom",80000,1600,3},
+ {"Void Auction Dragon","Phantom",125000,2500,3},
+ {"Obsidian King Wyrm","Mythic",250000,5000,1},
+ {"Galaxy Dragon","Mythic",400000,8000,1},
+ {"404 Shadow Dragon","Dark Web",1000000,20000,0.15},
+ {"Forbidden Root Dragon","Dark Web",2000000,40000,0.08}
 }
 local palette = {
- Common=Color3.fromRGB(160,165,170),
- Uncommon=Color3.fromRGB(70,210,95),
- Rare=Color3.fromRGB(55,145,255),
- Epic=Color3.fromRGB(175,75,255),
- Legendary=Color3.fromRGB(255,185,40),
+ Street=Color3.fromRGB(160,165,170),
+ Hidden=Color3.fromRGB(70,210,95),
+ Deep=Color3.fromRGB(55,145,255),
+ Shadow=Color3.fromRGB(175,75,255),
+ Phantom=Color3.fromRGB(255,185,40),
  Mythic=Color3.fromRGB(255,55,135),
- Secret=Color3.fromRGB(15,245,225)
+ ["Dark Web"]=Color3.fromRGB(15,245,225)
 }
 local weightSum=0
 for _,d in ipairs(definitions) do
- pets[d[1]]=d
+ dragons[d[1]]=d
  weightSum+=d[5]
 end
 local function roll()
@@ -80,10 +80,10 @@ end
 local bases={}
 local assigned={}
 local function carried(plr)
- return plr:GetAttribute("CarriedPet") or ""
+ return plr:GetAttribute("CarriedDragon") or ""
 end
 local function setCarried(plr,name)
- plr:SetAttribute("CarriedPet",name or "")
+ plr:SetAttribute("CarriedDragon",name or "")
 end
 local function wallet(plr)
  local s=plr:FindFirstChild("leaderstats")
@@ -97,10 +97,10 @@ end
 local function store(base,d)
  local orb=block(d[1],base.pos+Vector3.new(0,3,0),Vector3.new(3,3,3),palette[d[2]],Enum.PartType.Ball)
  orb.Material=Enum.Material.Neon
- local entry={part=orb,pet=d}
+ local entry={part=orb,dragon=d}
  table.insert(base.items,entry)
  drawBase(base)
- use(orb,"Steal pet",function(plr)
+ use(orb,"Steal dragon",function(plr)
   if not base.owner or plr==base.owner or carried(plr)~="" then return end
   local index=table.find(base.items,entry)
   if not index then return end
@@ -119,8 +119,8 @@ spawn.Anchored=true
 spawn.Neutral=true
 spawn.Parent=world
 local dealer=block("Black Market Dealer",Vector3.new(0,3,-23),Vector3.new(9,6,5),Color3.fromRGB(50,190,105))
-use(dealer,"Sell held pet",function(plr)
- local d=pets[carried(plr)]
+use(dealer,"Sell held dragon",function(plr)
+ local d=dragons[carried(plr)]
  local c=wallet(plr)
  if not d or not c then return end
  c.Value+=d[3]
@@ -132,9 +132,9 @@ for i=1,8 do
  local base={owner=nil,pos=pos,items={}}
  block("Warehouse "..i,pos,Vector3.new(31,1,25),Color3.fromRGB(70,75,90))
  local deposit=block("Deposit "..i,pos+Vector3.new(0,2,-9),Vector3.new(7,3,3),Color3.fromRGB(50,110,255))
- use(deposit,"Store held pet",function(plr)
+ use(deposit,"Store held dragon",function(plr)
   if plr~=base.owner or #base.items>=10 then return end
-  local d=pets[carried(plr)]
+  local d=dragons[carried(plr)]
   if not d then return end
   setCarried(plr,nil)
   store(base,d)
@@ -172,7 +172,7 @@ task.spawn(function()
   task.wait(1)
   for plr,base in pairs(assigned) do
    local income=0
-   for _,entry in ipairs(base.items) do income+=entry.pet[4] end
+   for _,entry in ipairs(base.items) do income+=entry.dragon[4] end
    plr:SetAttribute("IncomePerSecond",income)
    local c=wallet(plr)
    if c then c.Value+=income end
@@ -194,7 +194,7 @@ task.spawn(function()
     active-=1
     orb:Destroy()
    end
-   use(orb,"Pick up "..d[2].." pet",function(plr)
+   use(orb,"Pick up "..d[2].." dragon",function(plr)
     if gone or carried(plr)~="" then return end
     setCarried(plr,d[1])
     remove()
@@ -204,4 +204,4 @@ task.spawn(function()
   task.wait(5)
  end
 end)
-print("Black Market Mayhem: 26 pets loaded.")
+print("Black Market Mayhem: 26 dragons loaded.")
