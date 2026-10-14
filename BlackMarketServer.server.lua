@@ -43,24 +43,24 @@ local palette = {
 }
 
 -- Deep midnight lighting; no external dark-web websites involved.
-Lighting.ClockTime=0.7
-Lighting.Brightness=1
-Lighting.Ambient=Color3.fromRGB(15,17,28)
-Lighting.OutdoorAmbient=Color3.fromRGB(10,12,21)
+Lighting.ClockTime=19.5
+Lighting.Brightness=2.5
+Lighting.Ambient=Color3.fromRGB(65,70,92)
+Lighting.OutdoorAmbient=Color3.fromRGB(55,62,85)
 Lighting.FogColor=Color3.fromRGB(12,14,25)
-Lighting.FogEnd=150
+Lighting.FogEnd=310
 local atmosphere=Lighting:FindFirstChildOfClass("Atmosphere") or Instance.new("Atmosphere")
-atmosphere.Density=0.48
+atmosphere.Density=0.24
 atmosphere.Color=Color3.fromRGB(36,41,59)
 atmosphere.Decay=Color3.fromRGB(12,14,24)
-atmosphere.Haze=2
+atmosphere.Haze=0.8
 atmosphere.Parent=Lighting
 local grading=Lighting:FindFirstChild("UnderworldGrading") or Instance.new("ColorCorrectionEffect")
 grading.Name="UnderworldGrading"
 grading.TintColor=Color3.fromRGB(195,215,255)
-grading.Contrast=0.2
-grading.Saturation=-0.26
-grading.Brightness=-0.06
+grading.Contrast=0.1
+grading.Saturation=-0.12
+grading.Brightness=0.06
 grading.Parent=Lighting
 local bloom=Lighting:FindFirstChild("UnderworldBloom") or Instance.new("BloomEffect")
 bloom.Name="UnderworldBloom"
@@ -202,7 +202,7 @@ local function store(base,d)
   drawBase(base)
  end)
 end
-block("Asphalt",Vector3.new(0,-1,0),Vector3.new(220,2,220),Color3.fromRGB(13,15,22))
+block("Asphalt",Vector3.new(0,-1,0),Vector3.new(220,2,220),Color3.fromRGB(40,44,57))
 
 -- Neon downtown silhouettes, lamps, roads and a central underground yard.
 for i=1,20 do
@@ -224,8 +224,8 @@ for i=1,12 do
  bulb.Material=Enum.Material.Neon
  local light=Instance.new("PointLight")
  light.Color=bulb.Color
- light.Range=24
- light.Brightness=1.4
+ light.Range=34
+ light.Brightness=2.2
  light.Parent=bulb
 end
 
@@ -300,7 +300,7 @@ for i=1,8 do
  local a=(i-1)*math.pi/4
  local pos=Vector3.new(math.cos(a)*73,0,math.sin(a)*73)
  local base={owner=nil,pos=pos,items={}}
- block("Warehouse "..i,pos,Vector3.new(31,1,25),Color3.fromRGB(24,26,37))
+ block("Warehouse "..i,pos,Vector3.new(31,1,25),Color3.fromRGB(49,54,70))
  local deposit=block("Deposit "..i,pos+Vector3.new(0,2,-9),Vector3.new(7,3,3),Color3.fromRGB(26,48,90))
  use(deposit,"Store held dragon",function(plr)
   if plr~=base.owner or #base.items>=10 then return end
